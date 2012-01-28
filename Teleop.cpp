@@ -1,65 +1,83 @@
-// sample robot code
-// Steve Tarr - team 1425 mentor - 05-11-2011
+#include "Machine.h"
 
-// WPILib Includes
-#include "IterativeRobot.h"
-
-// Our Includes
-#include "MyRobot.h"
-
-void MyRobot::TeleopInit()
+void Machine :: TeleopInit()
 {
-    drive.StopMotor();
-    pressure.Start();
-    arm.Set(false);
-    grabber.Set(false);
-    gun.Set(Relay::kOff);
-    
-    SmartDashboard::Log("Autonomous", "Robot State");
-    SmartDashboard::Log( 0.0, "Left" );
-    SmartDashboard::Log( 0.0, "Right" );
-    SmartDashboard::Log( true, "Compressor" );
-    SmartDashboard::Log( false, "Arm" );
-    SmartDashboard::Log( false, "Grabber" );
-    SmartDashboard::Log( false, "Gun" );
-
     DriverStationLCD *lcd = DriverStationLCD::GetInstance();
-    lcd->PrintfLine(DriverStationLCD::kUser_Line2, "Teleop Mode");
+    lcd->PrintfLine(DriverStationLCD::kUser_Line2, "Ben is here");
     lcd->UpdateLCD();
 }
 
-void MyRobot::TeleopPeriodic()
+void Machine :: DisabledInit()
 {
-    float left, right;
-    bool trigger;
-    
-    left = joy_left.GetY() / 2.0F;
-    right = joy_right.GetY() / 2.0F;
-    drive.TankDrive( left, right );
-    SmartDashboard::Log( left, "Left");
-    SmartDashboard::Log( right, "Right" );
-    
-    // analog input 1
-    trigger = ( DriverStation::GetInstance()->GetAnalogIn(1) < 0.5F );
-    arm.Set( trigger );
-    SmartDashboard::Log( trigger, "Arm" );
 
-    // grab/release digital input 6
-    
-    trigger = DriverStation::GetInstance()->GetDigitalIn( 6 );
-    grabber.Set( trigger );
-    SmartDashboard::Log( trigger, "Grabber" );
-    
-    // gun digital input 1
-    
-    trigger = ! DriverStation::GetInstance()->GetDigitalIn( 1 );
-    gun.Set( trigger ? Relay::kOn : Relay::kOff );
-    SmartDashboard::Log( trigger, "Grabber" );
-    
-    m_watchdog.Feed();
 }
 
-void MyRobot::TeleopContinuous()
+void Machine :: AutonomousInit()
 {
-    taskDelay(1);		// be nice to other tasks
+
 }
+
+void Machine :: AutonomousPeriodic()
+{
+
+}
+
+void Machine :: TeleopPeriodic()
+{	
+	/*
+	float leftY = lStick.GetY();
+	float rightX = rStick.GetX();
+	float rightY = rStick.GetY();
+	float rightT = rStick.GetTwist();
+	*/
+	if(rStick.GetTop())
+		triggerState = 1;
+	else if(triggerState)
+	{
+		if(stickToggle < 2)
+			stickToggle++;
+		else
+			stickToggle = 0;
+		triggerState = 0;
+	}
+	
+	SmartDashboard :: Log(stickToggle, "stickToggle");
+	
+	switch(stickToggle)
+	{
+		case 0: 
+		drive.tankDrive(rStick.GetY(), lStick.GetY());
+		break;
+		case 1:
+		drive.arcadeDrive(rStick.GetY(), rStick.GetX());
+		break;
+		case 2:
+		drive.arcadeDrive(rStick.GetY(), rStick.GetTwist());
+		break;
+		default:
+		SmartDashboard :: Log(stickToggle, "stickToggle has exceeded its bounds");
+		break;
+	}	
+	
+	//DriverStation::GetInstance()->GetDigitalIn( 6 )
+}
+void Machine :: DisabledPeriodic()
+{
+	
+}
+
+void Machine :: TeleopContinuous()
+{
+	
+}
+
+void Machine :: AutonomousContinuous()
+{
+	
+}
+
+void Machine :: DisabledContinuous()
+{
+	
+}
+
