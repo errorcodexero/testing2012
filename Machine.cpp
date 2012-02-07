@@ -2,7 +2,7 @@
 #include "Constants.h"
 
 Machine :: Machine() :
-lStick(LSTICK), rStick(RSTICK), drive()
+lStick(LSTICK), rStick(RSTICK), drive(), camera()
 {
 	//m_watchdog.SetEnabled(false);
 	stickToggle = 0;

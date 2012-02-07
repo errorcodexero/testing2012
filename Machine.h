@@ -1,10 +1,12 @@
 #include <WPILib.h>
 #include "BenDrive.h"
+#include "benCamera.h"
 
 class Machine : public IterativeRobot
 {
 	Joystick lStick, rStick;
 	BenDrive drive;
+	benCamera camera;
 	int stickToggle;
 	int triggerState;
 

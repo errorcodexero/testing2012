@@ -24,12 +24,6 @@ void Machine :: AutonomousPeriodic()
 
 void Machine :: TeleopPeriodic()
 {	
-	/*
-	float leftY = lStick.GetY();
-	float rightX = rStick.GetX();
-	float rightY = rStick.GetY();
-	float rightT = rStick.GetTwist();
-	*/
 	if(rStick.GetTop())
 		triggerState = 1;
 	else if(triggerState)
@@ -58,6 +52,9 @@ void Machine :: TeleopPeriodic()
 		SmartDashboard :: Log(stickToggle, "stickToggle has exceeded its bounds");
 		break;
 	}	
+	
+	camera.refreshImage();
+	camera.refreshProcessedImage();
 	
 	//DriverStation::GetInstance()->GetDigitalIn( 6 )
 }
