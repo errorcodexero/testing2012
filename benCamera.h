@@ -8,9 +8,6 @@ public:
 	void refreshImage();
 	void refreshProcessedImage();
 	void setParticles();
-	
-private:
-	void errorCheck(int val);
 	class particle
 	{
 	public:
@@ -23,12 +20,21 @@ private:
 			yCenter = 0;
 			xCenter = 0;
 		}
+		particle& operator = (const particle& p)
+		{
+			area = p.area;
+			yCenter = p.yCenter;
+			xCenter = p.xCenter;
+			return *this;
+		}		
 	};
+	
+private:
+	void errorCheck(int val);
 	particle hoopParticle[4];
-	particle tempParticle;
 	AxisCamera &axisCamera;
 	HSLImage *image;
 	Image* img;
+	MonoImage *mono;
 	int numParticles;
-	double biggestArea;
 };

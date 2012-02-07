@@ -55,6 +55,7 @@ void Machine :: TeleopPeriodic()
 	
 	camera.refreshImage();
 	camera.refreshProcessedImage();
+	camera.setParticles();
 	
 	//DriverStation::GetInstance()->GetDigitalIn( 6 )
 }

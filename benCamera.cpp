@@ -1,5 +1,17 @@
 #include "benCamera.h"
 
+int compareHeight(const void * x1, const void * x2)
+{
+		benCamera :: particle *p1 = (benCamera :: particle *) x1;
+		benCamera :: particle *p2 = (benCamera :: particle *) x2;
+		if(p1->yCenter < p2->yCenter)
+			return 1;
+		else if(p1->yCenter == p2->yCenter)
+			return 0;
+		else
+			return -1;
+}
+
 benCamera :: benCamera() :
 	axisCamera(AxisCamera::GetInstance()), img()
 {
@@ -65,23 +77,45 @@ void benCamera :: refreshProcessedImage()
 		imaqThreshold(img, img, 200, 255, 1, 255);
     	imaqRejectBorder(img, img, 0);
     	imaqConvexHull(img, img, 0);
+    	imaqSizeFilter(img, img, 1, 2, IMAQ_KEEP_LARGE, NULL);
     	writeImage(img, "Processed_Image.bmp", 1);
-    	delete mono;
 }
 	
 void benCamera :: setParticles()
 {
-	biggestArea = 0.0;
-	imaqSizeFilter(img, img, 1, 2, IMAQ_KEEP_LARGE, NULL);
-	imaqCountParticles(img, 1, &numParticles);
-	printf("%d\n", numParticles);
+	int k = 0;
+	particle tempParticle;
+	errorCheck(imaqCountParticles(img, 1, &numParticles));
+	printf("numParticles: %d\n", numParticles);
 	for(int i = 0; i < (numParticles - 1); i++)
 	{
 		imaqMeasureParticle(img, i, 0, IMAQ_MT_AREA, &tempParticle.area);
-		if(1)
+		for(int j = 0; j < 4; j++)
 		{
-			
+			if(hoopParticle[k].area > tempParticle.area)
+			{
+				hoopParticle[k].area = tempParticle.area;
+				imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_X, &hoopParticle[k].xCenter);
+				imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_Y, &hoopParticle[k].yCenter);		
+			}
+			k = (k < 4) ? k + 1 : 0;
 		}
 	}
+	qsort(hoopParticle, 4, sizeof(particle), compareHeight); //x-axis is normal, y-axis is inverted
+	if(hoopParticle[1].xCenter < hoopParticle[2].xCenter)
+	{
+		tempParticle = hoopParticle[1];
+		hoopParticle[1] = hoopParticle[2];
+		hoopParticle[2] = tempParticle;
+	}
+	else
+	{
+		tempParticle = hoopParticle[2];
+		hoopParticle[2] = hoopParticle[1];
+		hoopParticle[1] = tempParticle;
+	}
+	for(int i = 0; i < 4; i++)
+		printf("hoopParticle %d: %g \n", i, hoopParticle[i].yCenter);
+	delete mono;
 }
 
