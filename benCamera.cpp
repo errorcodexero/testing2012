@@ -12,6 +12,18 @@ int compareHeight(const void * x1, const void * x2)
 			return -1;
 }
 
+int compareArea(const void * x1, const void * x2)
+{
+		benCamera :: particle *p1 = (benCamera :: particle *) x1;
+		benCamera :: particle *p2 = (benCamera :: particle *) x2;
+		if(p1->area < p2->area)
+			return 1;
+		else if(p1->area == p2->area)
+			return 0;
+		else
+			return -1;
+}
+
 benCamera :: benCamera() :
 	axisCamera(AxisCamera::GetInstance()), img()
 {
@@ -38,7 +50,6 @@ void benCamera :: writeImage(Image* img, const char *file, int usepalette)
     char path[255];
     // TODO: check string fits... 
     sprintf(path, "%s%s", "/images/", file);
-
 
     int width, height;
     imaqGetImageSize(img, &width, &height);
@@ -69,7 +80,7 @@ void benCamera :: refreshImage()
 	}
 }
 
-void benCamera :: refreshProcessedImage()
+void benCamera :: setParticles()
 {
 		printf("I has image\n");
 		MonoImage * mono = image->GetLuminancePlane();
@@ -79,43 +90,29 @@ void benCamera :: refreshProcessedImage()
     	imaqConvexHull(img, img, 0);
     	imaqSizeFilter(img, img, 1, 2, IMAQ_KEEP_LARGE, NULL);
     	writeImage(img, "Processed_Image.bmp", 1);
+    	particle allParticles[256];
+    	imaqCountParticles(img, 1, &numParticles);
+    	if(numParticles > 256)//truncating amount of particles to 256 so memory won't die
+    		numParticles = 256;
+    	for(int i = 0; i < numParticles; i++)
+    	{
+    		particle* p = & allParticles[i];
+       		imaqMeasureParticle(img, i, 0, IMAQ_MT_AREA, &(p->area));
+			imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_X, &(p->xCenter));
+			imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_Y, &(p->yCenter));	
+    	}
+    	qsort(allParticles, numParticles, sizeof(particle), compareArea);
+    	for(int i = 0; i < 4; i++)
+    		hoopParticles[i] = allParticles[i];
+    	qsort(hoopParticles, 4, sizeof(particle), compareHeight);
+    	if(hoopParticles[1].xCenter > hoopParticles[2].xCenter)
+    	{
+    		allParticles[0] = hoopParticles[1];
+    		hoopParticles[1] = hoopParticles[2];
+    		hoopParticles[2] = allParticles[0];
+    	}
+    	for(int i = 0; i < 4; i++)
+    		printf("hoopParticle %d: %g, %g, %g \n", i, hoopParticles[i].area, hoopParticles[i].xCenter, hoopParticles[i].yCenter);
+    		
+    	delete mono;
 }
-	
-void benCamera :: setParticles()
-{
-	int k = 0;
-	particle tempParticle;
-	errorCheck(imaqCountParticles(img, 1, &numParticles));
-	printf("numParticles: %d\n", numParticles);
-	for(int i = 0; i < (numParticles - 1); i++)
-	{
-		imaqMeasureParticle(img, i, 0, IMAQ_MT_AREA, &tempParticle.area);
-		for(int j = 0; j < 4; j++)
-		{
-			if(hoopParticle[k].area > tempParticle.area)
-			{
-				hoopParticle[k].area = tempParticle.area;
-				imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_X, &hoopParticle[k].xCenter);
-				imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_Y, &hoopParticle[k].yCenter);		
-			}
-			k = (k < 4) ? k + 1 : 0;
-		}
-	}
-	qsort(hoopParticle, 4, sizeof(particle), compareHeight); //x-axis is normal, y-axis is inverted
-	if(hoopParticle[1].xCenter < hoopParticle[2].xCenter)
-	{
-		tempParticle = hoopParticle[1];
-		hoopParticle[1] = hoopParticle[2];
-		hoopParticle[2] = tempParticle;
-	}
-	else
-	{
-		tempParticle = hoopParticle[2];
-		hoopParticle[2] = hoopParticle[1];
-		hoopParticle[1] = tempParticle;
-	}
-	for(int i = 0; i < 4; i++)
-		printf("hoopParticle %d: %g \n", i, hoopParticle[i].yCenter);
-	delete mono;
-}
-

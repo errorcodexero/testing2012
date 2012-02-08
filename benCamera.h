@@ -6,7 +6,6 @@ public:
 	benCamera();
 	void writeImage(Image* img, const char *file, int usepalette);
 	void refreshImage();
-	void refreshProcessedImage();
 	void setParticles();
 	class particle
 	{
@@ -31,7 +30,7 @@ public:
 	
 private:
 	void errorCheck(int val);
-	particle hoopParticle[4];
+	particle hoopParticles[4];
 	AxisCamera &axisCamera;
 	HSLImage *image;
 	Image* img;
