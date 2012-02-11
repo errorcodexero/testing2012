@@ -53,10 +53,7 @@ void Machine :: TeleopPeriodic()
 		break;
 	}	
 	
-	camera.refreshImage();
-	camera.setParticles();
-	//camera.setParticles();
-	
+	camera.refreshImage();	
 	//DriverStation::GetInstance()->GetDigitalIn( 6 )
 }
 void Machine :: DisabledPeriodic()

@@ -1,5 +1,12 @@
 #include "benCamera.h"
 
+//Constants used for calculation of position
+static double pi = 3.14159265;
+static double FOV = pi / 4;
+static double xResolution = 640;
+static double yResolution = 480;
+static double hoopWidthHalf = 39 + 3/8;
+
 int compareHeight(const void * x1, const void * x2)
 {
 		benCamera :: particle *p1 = (benCamera :: particle *) x1;
@@ -27,7 +34,6 @@ int compareArea(const void * x1, const void * x2)
 benCamera :: benCamera() :
 	axisCamera(AxisCamera::GetInstance()), img()
 {
-	image = new HSLImage();
 	numParticles = 0;
 	axisCamera.WriteResolution(AxisCamera::kResolution_640x480);
 	axisCamera.WriteCompression(20);
@@ -75,17 +81,23 @@ void benCamera :: refreshImage()
 {
 	if (axisCamera.IsFreshImage())
 	{
-		axisCamera.GetImage(image);
-		image->Write("/images/Image.bmp");
+		axisCamera.GetImage(&image);
+		//image.LuminanceEqualize();
+		image.Write("/images/Image.bmp");
+		setParticles();
 	}
 }
 
 void benCamera :: setParticles()
 {
 		printf("I has image\n");
-		MonoImage * mono = image->GetLuminancePlane();
+		/*
+		MonoImage * mono = image.GetLuminancePlane();
 		img = mono->GetImaqImage();
 		imaqThreshold(img, img, 200, 255, 1, 255);
+		*/
+		BinaryImage* bi = image.ThresholdHSL(0, 255, 0, 255, 180, 255);
+		img = bi->GetImaqImage();
     	imaqRejectBorder(img, img, 0);
     	imaqConvexHull(img, img, 0);
     	imaqSizeFilter(img, img, 1, 2, IMAQ_KEEP_LARGE, NULL);
@@ -99,7 +111,9 @@ void benCamera :: setParticles()
     		particle* p = & allParticles[i];
        		imaqMeasureParticle(img, i, 0, IMAQ_MT_AREA, &(p->area));
 			imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_X, &(p->xCenter));
-			imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_Y, &(p->yCenter));	
+			imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_Y, &(p->yCenter));
+			imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_LEFT, &(p->leftBound));
+			imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_RIGHT , &(p->rightBound));
     	}
     	qsort(allParticles, numParticles, sizeof(particle), compareArea);
     	for(int i = 0; i < 4; i++)
@@ -113,6 +127,22 @@ void benCamera :: setParticles()
     	}
     	for(int i = 0; i < 4; i++)
     		printf("hoopParticle %d: %g, %g, %g \n", i, hoopParticles[i].area, hoopParticles[i].xCenter, hoopParticles[i].yCenter);
-    		
-    	delete mono;
+    	delete bi;
+    	setPosition();
+    	//delete mono;
+}
+
+void benCamera :: setPosition()
+{
+	double pCenter = ((hoopParticles[0].xCenter + hoopParticles[3].xCenter) / 2);
+	double angleLeft = (pCenter - hoopParticles[1].leftBound) * (FOV / xResolution);
+	double angleRight = (hoopParticles[2].rightBound - pCenter) * (FOV / xResolution);
+	double camAngle = ((xResolution / 2) - pCenter) * (FOV / xResolution);
+	printf("values: %g, %g, %g \n", angleLeft, angleRight, camAngle);
+	double leftmostAngle = (pi / 2) - (angleLeft - camAngle);
+	double rightmostAngle = (pi / 2) - (angleRight - camAngle);
+	double calcDistanceLeft = sin(leftmostAngle) * (hoopWidthHalf / sin(angleLeft));
+	double calcDistanceRight = sin(rightmostAngle) * (hoopWidthHalf / sin(angleRight));
+	double distance = (calcDistanceLeft + calcDistanceRight) / 2;
+	printf("distances: %g, %g %g \n", calcDistanceLeft, calcDistanceRight, distance);
 }
