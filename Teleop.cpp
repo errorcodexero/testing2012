@@ -53,7 +53,6 @@ void Machine :: TeleopPeriodic()
 		break;
 	}	
 	
-	camera.refreshImage();	
 	//DriverStation::GetInstance()->GetDigitalIn( 6 )
 }
 void Machine :: DisabledPeriodic()
@@ -63,7 +62,10 @@ void Machine :: DisabledPeriodic()
 
 void Machine :: TeleopContinuous()
 {
-	
+	//long start = GetFPGATime();
+	//camera.refreshImage();
+	//long end = GetFPGATime();
+	//printf("%ld \n", (end - start) / 1000);
 }
 
 void Machine :: AutonomousContinuous()

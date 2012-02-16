@@ -1,5 +1,7 @@
 #include "benCamera.h"
 
+#define CHECK(x) {if(!x){errorCheck(x); printf("Imaq image function failed at line %d \n", __LINE__); return 1;}}
+
 //Constants used for calculation of position
 static double pi = 3.14159265;
 static double FOV = pi / 4;
@@ -32,15 +34,14 @@ int compareArea(const void * x1, const void * x2)
 }
 
 benCamera :: benCamera() :
-	axisCamera(AxisCamera::GetInstance()), img()
+	axisCamera(AxisCamera::GetInstance())
 {
-	numParticles = 0;
 	axisCamera.WriteResolution(AxisCamera::kResolution_640x480);
 	axisCamera.WriteCompression(20);
 	axisCamera.WriteBrightness(50);
 }
 
-void benCamera :: errorCheck(int val)
+void errorCheck(int val)
 {
 	if(!val)
 	{
@@ -83,53 +84,52 @@ void benCamera :: refreshImage()
 	{
 		axisCamera.GetImage(&image);
 		//image.LuminanceEqualize();
-		image.Write("/images/Image.bmp");
+		//image.Write("/images/Image.bmp");
 		setParticles();
 	}
 }
 
-void benCamera :: setParticles()
+int benCamera :: setParticles()
 {
-		printf("I has image\n");
-		/*
-		MonoImage * mono = image.GetLuminancePlane();
-		img = mono->GetImaqImage();
-		imaqThreshold(img, img, 200, 255, 1, 255);
-		*/
-		BinaryImage* bi = image.ThresholdHSL(0, 255, 0, 255, 180, 255);
-		img = bi->GetImaqImage();
-    	imaqRejectBorder(img, img, 0);
-    	imaqConvexHull(img, img, 0);
-    	imaqSizeFilter(img, img, 1, 2, IMAQ_KEEP_LARGE, NULL);
-    	writeImage(img, "Processed_Image.bmp", 1);
+		int numParticles = 0;
+		printf("I has image\n");		
+		MonoImage * mono = image.GetBluePlane();
+		if(!mono)
+			return 1;
+		Image* img = mono->GetImaqImage();
+		CHECK(imaqThreshold(img, img, 200, 255, 1, 255));
+		//BinaryImage* bi = image.ThresholdHSL(0, 255, 0, 255, 180, 255);
+		//img = bi->GetImaqImage();
+    	//imaqRejectBorder(img, img, 0);
+    	CHECK(imaqConvexHull(img, img, 1));
+    	CHECK(imaqSizeFilter(img, img, 1, 2, IMAQ_KEEP_LARGE, NULL));
+    	//writeImage(img, "Processed_Image.bmp", 1);
+    	
     	particle allParticles[256];
-    	imaqCountParticles(img, 1, &numParticles);
+    	CHECK(imaqCountParticles(img, 1, &numParticles));
     	if(numParticles > 256)//truncating amount of particles to 256 so memory won't die
     		numParticles = 256;
     	for(int i = 0; i < numParticles; i++)
     	{
     		particle* p = & allParticles[i];
-       		imaqMeasureParticle(img, i, 0, IMAQ_MT_AREA, &(p->area));
-			imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_X, &(p->xCenter));
-			imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_Y, &(p->yCenter));
-			imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_LEFT, &(p->leftBound));
-			imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_RIGHT , &(p->rightBound));
+       		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_AREA, &(p->area)));
+       		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_X, &(p->xCenter)));
+       		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_Y, &(p->yCenter)));
+       		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_LEFT, &(p->leftBound)));
+       		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_RIGHT , &(p->rightBound)));
     	}
     	qsort(allParticles, numParticles, sizeof(particle), compareArea);
     	for(int i = 0; i < 4; i++)
     		hoopParticles[i] = allParticles[i];
     	qsort(hoopParticles, 4, sizeof(particle), compareHeight);
     	if(hoopParticles[1].xCenter > hoopParticles[2].xCenter)
-    	{
-    		allParticles[0] = hoopParticles[1];
-    		hoopParticles[1] = hoopParticles[2];
-    		hoopParticles[2] = allParticles[0];
-    	}
+    		swap(hoopParticles[1], hoopParticles[2]);	
     	for(int i = 0; i < 4; i++)
     		printf("hoopParticle %d: %g, %g, %g \n", i, hoopParticles[i].area, hoopParticles[i].xCenter, hoopParticles[i].yCenter);
-    	delete bi;
+    	//delete bi;
     	setPosition();
-    	//delete mono;
+    	delete mono;
+    	return 0;
 }
 
 void benCamera :: setPosition()

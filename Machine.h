@@ -27,4 +27,13 @@ public:
     void DisabledContinuous();
     void AutonomousContinuous();
     void TeleopContinuous();
+    
+    void init();
+    void start();
+    void run();
+    void stop();
+private:
+    int running;
+    unsigned long int runTime;
+    unsigned long int offset;
 };

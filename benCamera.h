@@ -1,5 +1,6 @@
 #include <WPILib.h>
 #include <math.h>
+#include <vision/RGBImage.h>
 
 class benCamera
 {
@@ -7,7 +8,7 @@ public:
 	benCamera();
 	void writeImage(Image* img, const char *file, int usepalette);
 	void refreshImage();
-	void setParticles();
+	int setParticles();
 	void setPosition();
 	class particle
 	{
@@ -37,11 +38,7 @@ public:
 	};
 	
 private:
-	void errorCheck(int val);
 	particle hoopParticles[4];
+	RGBImage image;
 	AxisCamera &axisCamera;
-	HSLImage image;
-	Image* img;
-	MonoImage *mono;
-	int numParticles;
 };
