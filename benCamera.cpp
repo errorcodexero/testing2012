@@ -6,7 +6,7 @@
 static double pi = 3.14159265;
 static double FOV = pi / 4;
 static double xResolution = 640;
-static double yResolution = 480;
+//static double yResolution = 480;
 static double hoopWidthHalf = 39 + 3/8;
 
 int compareHeight(const void * x1, const void * x2)
@@ -36,6 +36,7 @@ int compareArea(const void * x1, const void * x2)
 benCamera :: benCamera() :
 	axisCamera(AxisCamera::GetInstance())
 {
+	hoopDirection = 0;
 	axisCamera.WriteResolution(AxisCamera::kResolution_640x480);
 	axisCamera.WriteCompression(20);
 	axisCamera.WriteBrightness(50);
@@ -49,6 +50,11 @@ void errorCheck(int val)
 		printf(err);
 		imaqDispose(err);
 	}
+}
+
+int benCamera :: getHoopDirection()
+{
+	return hoopDirection;
 }
 
 void benCamera :: writeImage(Image* img, const char *file, int usepalette)
@@ -117,17 +123,34 @@ int benCamera :: setParticles()
        		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_Y, &(p->yCenter)));
        		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_LEFT, &(p->leftBound)));
        		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_RIGHT , &(p->rightBound)));
+       		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_TOP, &(p->topBound))); 
+       		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_BOTTOM, &(p->bottomBound)));
+       		p->height = p->bottomBound - p->topBound;
+       		p->width = p->rightBound - p->leftBound;
     	}
     	qsort(allParticles, numParticles, sizeof(particle), compareArea);
     	for(int i = 0; i < 4; i++)
     		hoopParticles[i] = allParticles[i];
-    	qsort(hoopParticles, 4, sizeof(particle), compareHeight);
-    	if(hoopParticles[1].xCenter > hoopParticles[2].xCenter)
-    		swap(hoopParticles[1], hoopParticles[2]);	
-    	for(int i = 0; i < 4; i++)
-    		printf("hoopParticle %d: %g, %g, %g \n", i, hoopParticles[i].area, hoopParticles[i].xCenter, hoopParticles[i].yCenter);
-    	//delete bi;
-    	setPosition();
+    	if((((hoopParticles[2].height - hoopParticles[3].height) / 2) > PARTICLE_THRESHOLD) || (((hoopParticles[2].width - hoopParticles[3].width) / 2) > PARTICLE_THRESHOLD))
+    	{
+    		if(((hoopParticles[0].xCenter + hoopParticles[1].xCenter + hoopParticles[2].xCenter) / 3) < (xResolution / 2))
+    			hoopDirection = -1;
+    		else
+    			hoopDirection = 1;
+    		printf("4th Particle not in field of view. Direction: %d \n", hoopDirection);
+    		return 0;
+    	}
+    	else
+    	{
+    		hoopDirection = 0;
+    		qsort(hoopParticles, 4, sizeof(particle), compareHeight);
+    		if(hoopParticles[1].xCenter > hoopParticles[2].xCenter)
+    			swap(hoopParticles[1], hoopParticles[2]);	
+    		for(int i = 0; i < 4; i++)
+    			printf("hoopParticle %d: %g, %g, %g \n", i, hoopParticles[i].area, hoopParticles[i].xCenter, hoopParticles[i].yCenter);
+    		//delete bi;
+    		setPosition();
+    	}
     	delete mono;
     	return 0;
 }

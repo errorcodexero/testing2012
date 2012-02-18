@@ -18,6 +18,8 @@
 #define RVICDIRECTION 1
 #define LVICDIRECTION -1
 #define DEADBAND 0.05
+#define MAX_OUTPUT 300
+#define PARTICLE_THRESHOLD 10
 
 #ifdef SIXWHEEL
 #define JAGUAR

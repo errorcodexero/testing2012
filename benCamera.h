@@ -1,6 +1,7 @@
 #include <WPILib.h>
 #include <math.h>
 #include <vision/RGBImage.h>
+#include "Constants.h"
 
 class benCamera
 {
@@ -10,6 +11,7 @@ public:
 	void refreshImage();
 	int setParticles();
 	void setPosition();
+	int getHoopDirection();
 	class particle
 	{
 	public:
@@ -18,6 +20,10 @@ public:
 		double area;
 		double leftBound;
 		double rightBound;
+		double topBound;
+		double bottomBound;
+		double height;
+		double width;
 		particle()
 		{
 			area = 0;
@@ -25,6 +31,10 @@ public:
 			xCenter = 0;
 			leftBound = 0;
 			rightBound = 0;
+			topBound = 0;
+			bottomBound = 0;
+			height = 0;
+			width = 0;
 		}
 		particle& operator = (const particle& p)
 		{
@@ -33,11 +43,16 @@ public:
 			xCenter = p.xCenter;
 			leftBound = p.leftBound;
 			rightBound = p.rightBound;
+			topBound = p.topBound;
+			bottomBound = p.bottomBound;
+			height = p.height;
+			width = p.width;
 			return *this;
 		}
 	};
 	
 private:
+	int hoopDirection;
 	particle hoopParticles[4];
 	RGBImage image;
 	AxisCamera &axisCamera;
