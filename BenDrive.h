@@ -14,7 +14,9 @@ public:
 	BenDrive();
 	void tankDrive(float left, float right);
 	void arcadeDrive(float speedAxis, float turnAxis);
-	void EnableSpeedControl();
+	void positionDrive(float left, float right);
+	void enableSpeedControl();
+	void enablePositionControl();
 private:
 	CANJaguar* jaguars[4];
 };

@@ -36,6 +36,8 @@ int compareArea(const void * x1, const void * x2)
 benCamera :: benCamera() :
 	axisCamera(AxisCamera::GetInstance())
 {
+	angle = 0;
+	distance = 0;
 	hoopDirection = 0;
 	axisCamera.WriteResolution(AxisCamera::kResolution_640x480);
 	axisCamera.WriteCompression(20);
@@ -55,6 +57,16 @@ void errorCheck(int val)
 int benCamera :: getHoopDirection()
 {
 	return hoopDirection;
+}
+
+double benCamera :: getDistance()
+{
+	return distance;
+}
+
+double benCamera :: getAngle()
+{
+	return angle;
 }
 
 void benCamera :: writeImage(Image* img, const char *file, int usepalette)
@@ -155,17 +167,79 @@ int benCamera :: setParticles()
     	return 0;
 }
 
+int benCamera :: fastSetParticles()
+{
+	int numParticles = 0;
+	printf("I has image\n");		
+	MonoImage * mono = image.GetBluePlane();
+	if(!mono)
+		return 1;
+	Image* img = mono->GetImaqImage();
+	CHECK(imaqThreshold(img, img, 200, 255, 1, 255));
+	//BinaryImage* bi = image.ThresholdHSL(0, 255, 0, 255, 180, 255);
+	//img = bi->GetImaqImage();
+	//imaqRejectBorder(img, img, 0);
+	CHECK(imaqConvexHull(img, img, 1));
+	CHECK(imaqSizeFilter(img, img, 1, 2, IMAQ_KEEP_LARGE, NULL));
+	//writeImage(img, "Processed_Image.bmp", 1);
+	
+	double particleArea[256];
+	CHECK(imaqCountParticles(img, 1, &numParticles));
+	if(numParticles > 256)//truncating amount of particles to 256 so memory won't die
+		numParticles = 256;
+	for(int i = 0; i < numParticles; i++)
+	{
+   		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_AREA, &particleArea[i]));
+	}
+	qsort(particleArea, numParticles, sizeof(double), compareArea);
+	for(int i = 0; i < 4; i++)
+	{
+		hoopParticles[i].area = particleArea[i];
+		particle* p = & hoopParticles[i];
+   		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_X, &(p->xCenter)));
+   		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_CENTER_OF_MASS_Y, &(p->yCenter)));
+   		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_LEFT, &(p->leftBound)));
+   		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_RIGHT , &(p->rightBound)));
+   		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_TOP, &(p->topBound))); 
+   		CHECK(imaqMeasureParticle(img, i, 0, IMAQ_MT_BOUNDING_RECT_BOTTOM, &(p->bottomBound)));
+   		p->height = p->bottomBound - p->topBound;
+   		p->width = p->rightBound - p->leftBound;
+	}
+	if((((hoopParticles[2].height - hoopParticles[3].height) / 2) > PARTICLE_THRESHOLD) || (((hoopParticles[2].width - hoopParticles[3].width) / 2) > PARTICLE_THRESHOLD))
+	{
+		if(((hoopParticles[0].xCenter + hoopParticles[1].xCenter + hoopParticles[2].xCenter) / 3) < (xResolution / 2))
+			hoopDirection = -1;
+		else
+			hoopDirection = 1;
+		printf("4th Particle not in field of view. Direction: %d \n", hoopDirection);
+		return 0;
+	}
+	else
+	{
+		hoopDirection = 0;
+		qsort(hoopParticles, 4, sizeof(particle), compareHeight);
+		if(hoopParticles[1].xCenter > hoopParticles[2].xCenter)
+			swap(hoopParticles[1], hoopParticles[2]);	
+		for(int i = 0; i < 4; i++)
+			printf("hoopParticle %d: %g, %g, %g \n", i, hoopParticles[i].area, hoopParticles[i].xCenter, hoopParticles[i].yCenter);
+		//delete bi;
+		setPosition();
+	}
+	delete mono;
+	return 0;
+}
+
 void benCamera :: setPosition()
 {
 	double pCenter = ((hoopParticles[0].xCenter + hoopParticles[3].xCenter) / 2);
 	double angleLeft = (pCenter - hoopParticles[1].leftBound) * (FOV / xResolution);
 	double angleRight = (hoopParticles[2].rightBound - pCenter) * (FOV / xResolution);
-	double camAngle = ((xResolution / 2) - pCenter) * (FOV / xResolution);
-	printf("values: %g, %g, %g \n", angleLeft, angleRight, camAngle);
-	double leftmostAngle = (pi / 2) - (angleLeft - camAngle);
-	double rightmostAngle = (pi / 2) - (angleRight - camAngle);
+	angle = ((xResolution / 2) - pCenter) * (FOV / xResolution);
+	printf("values: %g, %g, %g \n", angleLeft, angleRight, angle);
+	double leftmostAngle = (pi / 2) - (angleLeft - angle);
+	double rightmostAngle = (pi / 2) - (angleRight - angle);
 	double calcDistanceLeft = sin(leftmostAngle) * (hoopWidthHalf / sin(angleLeft));
 	double calcDistanceRight = sin(rightmostAngle) * (hoopWidthHalf / sin(angleRight));
-	double distance = (calcDistanceLeft + calcDistanceRight) / 2;
+	distance = (calcDistanceLeft + calcDistanceRight) / 2;
 	printf("distances: %g, %g %g \n", calcDistanceLeft, calcDistanceRight, distance);
 }

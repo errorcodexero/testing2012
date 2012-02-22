@@ -5,6 +5,7 @@ void Machine :: TeleopInit()
     DriverStationLCD *lcd = DriverStationLCD::GetInstance();
     lcd->PrintfLine(DriverStationLCD::kUser_Line2, "Ben is here");
     lcd->UpdateLCD();
+    drive.enableSpeedControl();
 }
 
 void Machine :: DisabledInit()
@@ -14,7 +15,20 @@ void Machine :: DisabledInit()
 
 void Machine :: AutonomousInit()
 {
-
+	drive.enablePositionControl();
+	//drive.enableSpeedControl();
+	camera.refreshImage();
+	double direction = camera.getHoopDirection();
+	if(direction)
+	{
+		direction = camera.getHoopDirection();
+		drive.positionDrive(0.3 * direction, -0.3 * direction);
+		camera.refreshImage();
+	}
+	Wait(1.0);
+	double angle = camera.getAngle();
+	angle = angle * ((DISTANCE_BETWEEN_WHEELS / DIAMETER_OF_WHEEL) * GEAR_RATIO) / (2 * pi);
+	drive.positionDrive(-angle, angle); 
 }
 
 void Machine :: AutonomousPeriodic()
@@ -37,6 +51,9 @@ void Machine :: TeleopPeriodic()
 	
 	SmartDashboard :: Log(stickToggle, "stickToggle");
 	
+	float ly = lStick.GetY();
+	float ry = rStick.GetY();
+	printf("Right: %f \n Left: %f \n", ly, ry);
 	switch(stickToggle)
 	{
 		case 0: 
@@ -70,7 +87,7 @@ void Machine :: TeleopContinuous()
 
 void Machine :: AutonomousContinuous()
 {
-	
+	//track();
 }
 
 void Machine :: DisabledContinuous()

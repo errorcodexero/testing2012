@@ -47,6 +47,16 @@ void Machine :: stop()
 	running = 0;
 }
 
+void Machine :: track()
+{
+	camera.refreshImage();
+	int direction = camera.getHoopDirection();
+	if(direction)
+		drive.arcadeDrive(0, 0.5 * direction);
+	else
+		drive.arcadeDrive(0, camera.getAngle());
+}
+
 START_ROBOT_CLASS(Machine);
 
 

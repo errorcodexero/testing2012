@@ -10,8 +10,11 @@ public:
 	void writeImage(Image* img, const char *file, int usepalette);
 	void refreshImage();
 	int setParticles();
+	int fastSetParticles();
 	void setPosition();
 	int getHoopDirection();
+	double getDistance();
+	double getAngle();
 	class particle
 	{
 	public:
@@ -56,4 +59,6 @@ private:
 	particle hoopParticles[4];
 	RGBImage image;
 	AxisCamera &axisCamera;
+	double distance;
+	double angle;
 };
