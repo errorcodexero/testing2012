@@ -1,6 +1,8 @@
 #include <WPILib.h>
 #include "BenDrive.h"
 #include "benCamera.h"
+#include "benShooter.h"
+#include "Pickup.h"
 
 #define pi 3.14159265
 
@@ -9,9 +11,14 @@ class Machine : public IterativeRobot
 	Joystick lStick, rStick;
 	BenDrive drive;
 	benCamera camera;
+	SendableChooser lParam, rParam;
+	DriverStation *pDS;
+	Solenoid cowcatcher, plunger;
+	Compressor compressor;
+	benPickup pickup;
+	benShooter shooter;
 	int stickToggle;
 	int triggerState;
-	SendableChooser lParam, rParam;
 
 public:
     Machine();

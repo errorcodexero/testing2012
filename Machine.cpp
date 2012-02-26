@@ -2,7 +2,12 @@
 #include "Constants.h"
 
 Machine :: Machine() :
-lStick(LSTICK), rStick(RSTICK)
+lStick(LSTICK), rStick(RSTICK),
+pDS(DriverStation::GetInstance()),
+cowcatcher(COWCATCHER), 
+plunger(PLUNGER),
+compressor(COMPRESSOR_SWITCH, COMPRESSOR_RELAY)
+
 {
 	//m_watchdog.SetEnabled(false);
 	stickToggle = 0;
