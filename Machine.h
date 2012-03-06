@@ -3,6 +3,7 @@
 #include "benCamera.h"
 #include "benShooter.h"
 #include "Pickup.h"
+#include "Constants.h"
 
 #define pi 3.14159265
 
@@ -13,12 +14,14 @@ class Machine : public IterativeRobot
 	benCamera camera;
 	SendableChooser lParam, rParam;
 	DriverStation *pDS;
+	DriverStationEnhancedIO *pIO;
 	Solenoid cowcatcher, plunger;
 	Compressor compressor;
 	benPickup pickup;
 	benShooter shooter;
 	int stickToggle;
 	int triggerState;
+	int lastCase;
 
 public:
     Machine();

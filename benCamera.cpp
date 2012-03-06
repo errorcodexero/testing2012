@@ -3,7 +3,7 @@
 #define CHECK(x) {if(!x){errorCheck(x); printf("Imaq image function failed at line %d \n", __LINE__); return 1;}}
 
 //Constants used for calculation of position
-static double pi = 3.14159265;
+
 static double FOV = pi / 4;
 static double xResolution = 640;
 //static double yResolution = 480;

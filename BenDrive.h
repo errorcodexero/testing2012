@@ -1,4 +1,5 @@
 #include <WPILib.h>
+#include "xCanJaguar.h"
 #include "Constants.h"
 
 class BenDrive
@@ -7,17 +8,18 @@ class BenDrive
 	Victor Lvic, Rvic;
 #endif
 #ifdef JAGUAR
-	CANJaguar tlJaguar, trJaguar, blJaguar, brJaguar;
+	xCANJaguar tlJaguar, trJaguar, blJaguar, brJaguar;
 #endif
 	
 public:
 	BenDrive();
 	void tankDrive(float left, float right);
 	void arcadeDrive(float speedAxis, float turnAxis);
-	void positionDrive(float left, float right);
+	void positionDrive(float left, float right); // old, use angleDrive instead
+	int angleDrive(float angle, float tolerance);
 	void enableSpeedControl();
 	void enablePositionControl();
 private:
-	CANJaguar* jaguars[4];
+	xCANJaguar* jaguars[4];
 };
 

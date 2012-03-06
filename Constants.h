@@ -31,13 +31,22 @@
 #define COWCATCHER_SWITCH 2
 #define SHOOTER_SWITCH 4
 #define PLUNGER_SWITCH 1
-#define TOP_SHOOTER_VICTOR 1
-#define BOTTOM_SHOOTER_VICTOR 2
-#define TOP_SHOOTER_SENSOR 3
-#define BOTTOM_SHOOTER_SENSOR 4
+#define SHOOTER_TOP_VICTOR 1
+#define SHOOTER_BOTTOM_VICTOR 2
+#define SHOOTER_TOP_SENSOR 3
+#define SHOOTER_BOTTOM_SENSOR 4
 #define COMPRESSOR_SWITCH 1
 #define COMPRESSOR_RELAY 1
 #define ADJUST_SWITCH 3
+#define SHOOTER_P 0.01
+#define SHOOTER_I 0.001
+#define SHOOTER_D 0.0
+#define SHOOTER_DRIVE_RATIO 0.7
+#define SHOOTER_TOLERANCE 3.0 // in percent
+#define SHOOTER_PID_CONTROLLER 2
+#define MAX_GEARTOOTH_PPS 1200 // maximum number of pulses the geartooth will give in a second
+#define SHOT_TIME 0.8
+#define pi 3.14159265
 
 #ifdef SIXWHEEL
 #define JAGUAR

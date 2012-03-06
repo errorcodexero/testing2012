@@ -7,9 +7,9 @@ void BenDrive::enableSpeedControl()
 {
 	for(int i = 0; i < 4; i++)
 	{
-		jaguars[i]->ChangeControlMode( CANJaguar::kSpeed );
-		jaguars[i]->ConfigNeutralMode( CANJaguar::kNeutralMode_Coast );
-		jaguars[i]->SetSpeedReference( CANJaguar::kSpeedRef_QuadEncoder );
+		jaguars[i]->ChangeControlMode( xCANJaguar::kSpeed );
+		jaguars[i]->ConfigNeutralMode( xCANJaguar::kNeutralMode_Coast );
+		jaguars[i]->SetSpeedReference( xCANJaguar::kSpeedRef_QuadEncoder );
 		jaguars[i]->ConfigEncoderCodesPerRev( 360 );  // or 250, or 300?
 		jaguars[i]->SetPID( 0.300, 0.003, 0.001 );
 		jaguars[i]->Set( 0.0, 0 );
@@ -21,9 +21,9 @@ void BenDrive::enablePositionControl()
 {
 	for(int i = 0; i < 4; i++)
 	{
-		jaguars[i]->ChangeControlMode( CANJaguar::kPosition );
-		jaguars[i]->ConfigNeutralMode( CANJaguar::kNeutralMode_Coast );
-		jaguars[i]->SetPositionReference( CANJaguar::kPosRef_QuadEncoder );
+		jaguars[i]->ChangeControlMode( xCANJaguar::kPosition );
+		jaguars[i]->ConfigNeutralMode( xCANJaguar::kNeutralMode_Coast );
+		jaguars[i]->SetPositionReference( xCANJaguar::kPosRef_QuadEncoder );
 		jaguars[i]->ConfigEncoderCodesPerRev( 360 );  // or 250, or 300?
 		jaguars[i]->SetPID( 1000.0, 0.0, 10.0 );
 		jaguars[i]->Set( 0.0, 0 );
@@ -57,7 +57,7 @@ void BenDrive :: tankDrive(float left, float right)
 	blJaguar.Set((pow((left * LSIDEDIRECTION), TANKCURVE))  * MAX_OUTPUT, 1);
 	trJaguar.Set((pow((right * RSIDEDIRECTION), TANKCURVE)) * MAX_OUTPUT, 1);
 	brJaguar.Set((pow((right * RSIDEDIRECTION), TANKCURVE)) * MAX_OUTPUT, 1);
-	CANJaguar :: UpdateSyncGroup(1);
+	xCANJaguar :: UpdateSyncGroup(1);
 }
 void BenDrive :: arcadeDrive(float speedAxis, float turnAxis)
 {
@@ -69,7 +69,7 @@ void BenDrive :: arcadeDrive(float speedAxis, float turnAxis)
 	blJaguar.Set((pow((speedAxis + turnAxis) * LSIDEDIRECTION, TANKCURVE)) * MAX_OUTPUT, 1);
 	trJaguar.Set((pow((speedAxis - turnAxis) * RSIDEDIRECTION, TANKCURVE)) * MAX_OUTPUT, 1);
 	brJaguar.Set((pow((speedAxis - turnAxis) * RSIDEDIRECTION, TANKCURVE)) * MAX_OUTPUT, 1);
-	CANJaguar :: UpdateSyncGroup(1);
+	xCANJaguar :: UpdateSyncGroup(1);
 }
 
 void BenDrive :: positionDrive(float left, float right)
@@ -78,7 +78,17 @@ void BenDrive :: positionDrive(float left, float right)
 	blJaguar.Set((left * LSIDEDIRECTION), 1);
 	trJaguar.Set((right * RSIDEDIRECTION), 1);
 	trJaguar.Set((right * RSIDEDIRECTION), 1);
-	CANJaguar :: UpdateSyncGroup(1);
+	xCANJaguar :: UpdateSyncGroup(1);
+}
+
+int BenDrive :: angleDrive(float angle, float tolerance)
+{
+	float ratio = ((DISTANCE_BETWEEN_WHEELS / DIAMETER_OF_WHEEL) * GEAR_RATIO) / (2 * pi);
+	if((tlJaguar.GetPosition() * ratio) < tolerance && (trJaguar.GetPosition() * ratio) < tolerance
+		&& (blJaguar.GetPosition() * ratio) < tolerance && (brJaguar.GetPosition() * ratio) < tolerance)
+		return 1;
+	else
+		return 0;
 }
 
 #endif

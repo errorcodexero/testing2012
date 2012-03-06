@@ -12,6 +12,8 @@ compressor(COMPRESSOR_SWITCH, COMPRESSOR_RELAY)
 	//m_watchdog.SetEnabled(false);
 	stickToggle = 0;
 	triggerState = 0;
+	lastCase = 0;
+	pIO = &pDS->GetEnhancedIO();
 }
 
 Machine :: ~Machine() 
