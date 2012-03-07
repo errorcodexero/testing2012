@@ -17,6 +17,7 @@ public:
 	void arcadeDrive(float speedAxis, float turnAxis);
 	void positionDrive(float left, float right); // old, use angleDrive instead
 	int angleDrive(float angle, float tolerance);
+	void enableVoltageControl();
 	void enableSpeedControl();
 	void enablePositionControl();
 private:

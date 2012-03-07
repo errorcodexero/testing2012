@@ -18,7 +18,7 @@
 #define RVICDIRECTION 1.0
 #define LVICDIRECTION -1.0
 #define DEADBAND 0.05
-#define MAX_OUTPUT 300
+#define MAX_OUTPUT 1.0 //300
 #define PARTICLE_THRESHOLD 10
 #define DISTANCE_BETWEEN_WHEELS 19.0 // in inches
 #define DIAMETER_OF_WHEEL 8.0 // in inches
@@ -27,7 +27,7 @@
 #define PLUNGER 2
 #define PICKUP_RELAY 2
 #define BALL_COUNTER 2
-#define PICKUP_SWITCH 7
+#define PICKUP_SWITCH 1
 #define COWCATCHER_SWITCH 2
 #define SHOOTER_SWITCH 4
 #define PLUNGER_SWITCH 1
@@ -46,6 +46,8 @@
 #define SHOOTER_PID_CONTROLLER 2
 #define MAX_GEARTOOTH_PPS 1200 // maximum number of pulses the geartooth will give in a second
 #define SHOT_TIME 0.8
+#define ILLUMINATOR 3
+#define ILLUMINATOR_SWITCH 8
 #define pi 3.14159265
 
 #ifdef SIXWHEEL

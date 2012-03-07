@@ -5,13 +5,15 @@ Machine :: Machine() :
 lStick(LSTICK), rStick(RSTICK),
 pDS(DriverStation::GetInstance()),
 cowcatcher(COWCATCHER), 
-plunger(PLUNGER),
+illuminator(ILLUMINATOR, Relay::kForwardOnly),
 compressor(COMPRESSOR_SWITCH, COMPRESSOR_RELAY)
 
 {
 	//m_watchdog.SetEnabled(false);
-	stickToggle = 0;
+	stickToggle = 2;
 	triggerState = 0;
+	topState = 0;
+	turning = 0;
 	lastCase = 0;
 	pIO = &pDS->GetEnhancedIO();
 }

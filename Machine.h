@@ -15,12 +15,15 @@ class Machine : public IterativeRobot
 	SendableChooser lParam, rParam;
 	DriverStation *pDS;
 	DriverStationEnhancedIO *pIO;
-	Solenoid cowcatcher, plunger;
+	Solenoid cowcatcher;
+	Relay illuminator;
 	Compressor compressor;
 	benPickup pickup;
 	benShooter shooter;
 	int stickToggle;
 	int triggerState;
+	int turning;
+	int topState;
 	int lastCase;
 
 public:

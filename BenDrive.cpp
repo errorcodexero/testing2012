@@ -31,6 +31,19 @@ void BenDrive::enablePositionControl()
 	}
 }
 
+void BenDrive :: enableVoltageControl()
+{
+	for(int i = 0; i < 4; i++)
+	{
+		jaguars[i]->ChangeControlMode( xCANJaguar::kPercentVbus );
+		jaguars[i]->ConfigNeutralMode( xCANJaguar::kNeutralMode_Coast );
+		jaguars[i]->EnableControl();
+		jaguars[i]->Set( 0.0F, 0 );
+		jaguars[i]->SetExpiration( 0.5 );
+		jaguars[i]->Set( 0.0F, 0 );
+	}
+}
+
 BenDrive :: BenDrive() :
 #ifdef VICTOR
 Lvic(LVIC), Rvic(RVIC)
@@ -43,7 +56,7 @@ tlJaguar(TLJAGUAR), trJaguar(TRJAGUAR), blJaguar(BLJAGUAR), brJaguar(BRJAGUAR)
 	jaguars[1] = &trJaguar;
 	jaguars[2] = &blJaguar;
 	jaguars[3] = &brJaguar;
-	enableSpeedControl();
+	//enableSpeedControl();
 }
 
 #ifdef JAGUAR
@@ -88,7 +101,14 @@ int BenDrive :: angleDrive(float angle, float tolerance)
 		&& (blJaguar.GetPosition() * ratio) < tolerance && (brJaguar.GetPosition() * ratio) < tolerance)
 		return 1;
 	else
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			jaguars[i]->Set((angle * ratio));
+		}
+		xCANJaguar :: UpdateSyncGroup(1);
 		return 0;
+	}
 }
 
 #endif
