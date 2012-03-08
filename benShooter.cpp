@@ -6,14 +6,16 @@ driveRatio(SHOOTER_DRIVE_RATIO),
 tolerance(SHOOTER_TOLERANCE),
 plunger(PLUNGER),
 topMotor(SHOOTER_TOP_VICTOR), bottomMotor(SHOOTER_BOTTOM_VICTOR),
-topSensor(SHOOTER_TOP_SENSOR), bottomSensor(SHOOTER_BOTTOM_SENSOR),
+topSensor(SHOOTER_BOTTOM_SENSOR), bottomSensor(SHOOTER_TOP_SENSOR),
 topPID(p, i, d, &topSensor, &topMotor),
 bottomPID(p, i, d, &bottomSensor, &bottomMotor)
 
 {
-	multiplier = 0.0;
+	multiplier = 1.0;
+	autoHax = false;
+	shootEnable = true;
 	running = 0;
-	speed = 0.010825 * (140.0 * 140.0) + 5.02778 * 140.0 + 265;
+	speed = 0.010825 * (109.5 * 109.5) + 5.02778 * 109.5 + 265;
     topPID.SetInputRange(0.0, MAX_GEARTOOTH_PPS);
     bottomPID.SetInputRange(0.0, MAX_GEARTOOTH_PPS);
     topPID.SetOutputRange(0.0, 0.98);
@@ -24,6 +26,8 @@ bottomPID(p, i, d, &bottomSensor, &bottomMotor)
     bottomPID.SetPID(p, i, d);
     topSensor.SetAverageSize(8);
     bottomSensor.SetAverageSize(8);   
+	topSensor.Start();
+	bottomSensor.Start();
 }
 
 void benShooter :: adjustSpeed(float distance)
@@ -36,10 +40,9 @@ void benShooter :: start(int direction)
 {
 	speed *= direction;
 	running = 1;
-	topSensor.Start();
-	bottomSensor.Start();
 	topPID.Enable();
 	bottomPID.Enable();
+	run();
 }
 
 void benShooter :: stop()
@@ -58,6 +61,9 @@ void benShooter :: shoot()
 	if(/*topPID.OnTarget() && bottomPID.OnTarget()*/ 1)
 	{
 		shotTimer.Start();
+		shotTimer.Reset();
+		shootEnable = false;
+		printf("roger, roger \n");
 		plunger.Set(1);
 	}
 }
@@ -69,11 +75,11 @@ void benShooter :: run()
 		topPID.SetSetpoint(speed * driveRatio);
 		bottomPID.SetSetpoint(speed);
 	}
-	if(shotTimer.HasPeriodPassed(SHOT_TIME))
+	if(shotTimer.Get() > SHOT_TIME)
 	{
 		plunger.Set(0);
-		shotTimer.Stop();
-		shotTimer.Reset();
+		shootEnable = true;
+		autoHax = 1;
 	}
 }
 

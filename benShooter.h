@@ -14,6 +14,9 @@ public:
 	void shoot();
 	void run();
 	void setMultiplier(float n);
+	bool autoHax;
+	bool isTime;
+	bool shootEnable;
 private:
 	const float p, i, d;
 	const float driveRatio;

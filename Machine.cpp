@@ -11,9 +11,15 @@ compressor(COMPRESSOR_SWITCH, COMPRESSOR_RELAY)
 {
 	//m_watchdog.SetEnabled(false);
 	stickToggle = 2;
-	triggerState = 0;
+	isTime = 0;
+	cowcatcherState = 0;
+	lTriggerState = 0;
+	rTriggerState = 0;
+	ticks = 0;
 	topState = 0;
-	turning = 0;
+	turning = false;
+	specialTurning = 0;
+	extraSwitch = 0;
 	lastCase = 0;
 	pIO = &pDS->GetEnhancedIO();
 }

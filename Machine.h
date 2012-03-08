@@ -20,11 +20,18 @@ class Machine : public IterativeRobot
 	Compressor compressor;
 	benPickup pickup;
 	benShooter shooter;
+	Timer autoTimer;
+	bool cowcatcherState;
 	int stickToggle;
-	int triggerState;
-	int turning;
+	int lTriggerState, rTriggerState;
+	bool turning;
+	bool specialTurning;
 	int topState;
 	int lastCase;
+	bool isTime;
+	unsigned int ticks;
+	bool fudge;
+	int extraSwitch;
 
 public:
     Machine();
