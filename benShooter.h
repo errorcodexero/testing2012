@@ -12,16 +12,16 @@ public:
 	void start(int direction);
 	void stop();
 	void shoot();
-	void run();
-	void setMultiplier(float n);
-	bool autoHax;
+	void run(float multiplier);
+	//void setMultiplier(float n);
+	int autoHax;
 	bool isTime;
 	bool shootEnable;
 private:
 	const float p, i, d;
 	const float driveRatio;
 	const float tolerance;
-	float multiplier;
+	//float multiplier;
 	float speed;
 	int running;
 	Solenoid plunger;

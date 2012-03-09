@@ -34,6 +34,12 @@ void Machine :: RobotInit()
 	
 }
 
+int Machine :: getAutoSwitch()
+{
+	int finalValue = pIO->GetAnalogIn(AUTONOMOUS_SWITCH) * (10.0 / 3.3);
+	return finalValue;
+}
+
 void Machine :: init()
 {
 	running = 0;

@@ -51,14 +51,18 @@ void Machine :: AutonomousInit()
 
 void Machine :: AutonomousPeriodic()
 {
-	shooter.run();
-	if(shooter.autoHax)
+	
+	shooter.run(0.818);
+	if(autoTimer.Get() > 6.0)
 		shooter.stop();
 	if(autoTimer.Get() > 2.0 && (!isTime))
 	{
 		shooter.shoot();
 		isTime = true;
 	}
+	if(autoTimer.Get() > 4.0)
+		isTime = 0;
+	
 }
 
 void Machine :: TeleopPeriodic()
@@ -75,6 +79,7 @@ void Machine :: TeleopPeriodic()
 		topState = 0;
 	}
 	
+	/*
 	if(rStick.GetTrigger())
 		rTriggerState = 1;
 	else if(rTriggerState)
@@ -83,6 +88,12 @@ void Machine :: TeleopPeriodic()
 		cowcatcher.Set(cowcatcherState);
 		rTriggerState = 0;
 	}
+	*/
+	
+	if(rStick.GetTrigger())
+		cowcatcher.Set(1);
+	else
+		cowcatcher.Set(0);
 	
 	if(lStick.GetRawButton(3) && (!turning))
 	{
@@ -118,7 +129,7 @@ void Machine :: TeleopPeriodic()
 		printf("running");
 		if(fudge)
 		{
-			if(ticks > 16)
+			if(ticks > 160)
 			{
 				drive.tankDrive(0.0, 0.0);
 				turning = false;
@@ -126,7 +137,7 @@ void Machine :: TeleopPeriodic()
 		}
 		else
 		{
-			if(ticks > 8)
+			if(ticks > 80)
 			{
 				drive.tankDrive(0.0, 0.0);
 				turning = false;
@@ -134,7 +145,7 @@ void Machine :: TeleopPeriodic()
 		}
 	}
 	
-	
+	/*
 	if(convertOutput(pIO->GetAnalogInRatio(7)) && (!turning))
 		extraSwitch = 1;
 	else if(extraSwitch)
@@ -144,6 +155,7 @@ void Machine :: TeleopPeriodic()
 		drive.enablePositionControl();
 		extraSwitch = 0;
 	}
+	*/
 	
 	if(specialTurning)
 	{
@@ -156,6 +168,7 @@ void Machine :: TeleopPeriodic()
 		}
 	}
 	
+	printf("autonomous mode: %d: \n", getAutoSwitch());
 	
 	if(pIO->GetDigital(ILLUMINATOR_SWITCH))
 		illuminator.Set(Relay::kOn );
@@ -177,22 +190,20 @@ void Machine :: TeleopPeriodic()
 		case 1: pickup.start(); break;
 		default: printf("Things are seriously wrong. \n");
 	}
-	shooter.setMultiplier(pIO->GetAnalogInRatio(ADJUST_SWITCH) * 2.0);
 	int shooterSwitch = convertOutput(pIO->GetAnalogInRatio(SHOOTER_SWITCH));
 	if(shooterSwitch != lastCase)
 	{
 		switch (shooterSwitch)
 		{
 			case -1: shooter.stop(); lastCase = -1; break;
-			case 0: shooter.run(); lastCase = 0; break;
+			case 0: lastCase = 0; break;
 			case 1: shooter.start(1); lastCase = 1; break;
 			default: printf("Things are seriously wrong. \n");
 		}
 	}
+	shooter.run( pIO->GetAnalogInRatio(ADJUST_SWITCH) + 0.2);
 	if(pIO->GetDigital(PLUNGER_SWITCH) && shooter.shootEnable)
 		shooter.shoot();
-	
-	SmartDashboard :: Log(stickToggle, "stickToggle");
 	
 	if((!turning) && (!specialTurning))
 	{

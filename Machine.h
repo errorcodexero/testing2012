@@ -21,6 +21,7 @@ class Machine : public IterativeRobot
 	benPickup pickup;
 	benShooter shooter;
 	Timer autoTimer;
+	int getAutoSwitch();
 	bool cowcatcherState;
 	int stickToggle;
 	int lTriggerState, rTriggerState;

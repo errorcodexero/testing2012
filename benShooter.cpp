@@ -6,13 +6,12 @@ driveRatio(SHOOTER_DRIVE_RATIO),
 tolerance(SHOOTER_TOLERANCE),
 plunger(PLUNGER),
 topMotor(SHOOTER_TOP_VICTOR), bottomMotor(SHOOTER_BOTTOM_VICTOR),
-topSensor(SHOOTER_BOTTOM_SENSOR), bottomSensor(SHOOTER_TOP_SENSOR),
+topSensor(SHOOTER_TOP_SENSOR), bottomSensor(SHOOTER_BOTTOM_SENSOR),
 topPID(p, i, d, &topSensor, &topMotor),
 bottomPID(p, i, d, &bottomSensor, &bottomMotor)
 
 {
-	multiplier = 1.0;
-	autoHax = false;
+	autoHax = 0;
 	shootEnable = true;
 	running = 0;
 	speed = 0.010825 * (109.5 * 109.5) + 5.02778 * 109.5 + 265;
@@ -42,7 +41,6 @@ void benShooter :: start(int direction)
 	running = 1;
 	topPID.Enable();
 	bottomPID.Enable();
-	run();
 }
 
 void benShooter :: stop()
@@ -52,8 +50,7 @@ void benShooter :: stop()
 	bottomPID.Reset();
 	topMotor.PIDWrite(0.0);
 	bottomMotor.PIDWrite(0.0);
-	topSensor.Stop();
-	bottomSensor.Stop();
+
 }
 
 void benShooter :: shoot()
@@ -68,25 +65,26 @@ void benShooter :: shoot()
 	}
 }
 
-void benShooter :: run()
+void benShooter :: run(float multiplier)
 {
 	if(running)
 	{
-		topPID.SetSetpoint(speed * driveRatio);
-		bottomPID.SetSetpoint(speed);
+		topPID.SetSetpoint(speed * driveRatio * multiplier);
+		bottomPID.SetSetpoint(speed * multiplier);
+		SmartDashboard :: Log(multiplier, "Speed");
 	}
-	if(shotTimer.Get() > SHOT_TIME)
+	if(shotTimer.Get() > SHOT_TIME) 
 	{
 		plunger.Set(0);
 		shootEnable = true;
-		autoHax = 1;
+		autoHax ++;
 	}
 }
 
-void benShooter :: setMultiplier(float n)
-{
-	multiplier = n;
-}
+//void benShooter :: setMultiplier(float n)
+//{
+//	multiplier = n;
+//}
 
 /*
 benShooter :: benShooter() : 
