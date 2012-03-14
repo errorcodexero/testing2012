@@ -6,11 +6,13 @@ lStick(LSTICK), rStick(RSTICK),
 pDS(DriverStation::GetInstance()),
 cowcatcher(COWCATCHER), 
 illuminator(ILLUMINATOR, Relay::kForwardOnly),
-compressor(COMPRESSOR_SWITCH, COMPRESSOR_RELAY)
+compressor(COMPRESSOR_SWITCH, COMPRESSOR_RELAY),
+autoSwitch(AUTONOMOUS_SWITCH)
 
 {
 	//m_watchdog.SetEnabled(false);
 	stickToggle = 2;
+	autoMode = 1;
 	isTime = 0;
 	cowcatcherState = 0;
 	lTriggerState = 0;
@@ -32,12 +34,6 @@ Machine :: ~Machine()
 void Machine :: RobotInit()
 {
 	
-}
-
-int Machine :: getAutoSwitch()
-{
-	int finalValue = pIO->GetAnalogIn(AUTONOMOUS_SWITCH) * (10.0 / 3.3);
-	return finalValue;
 }
 
 void Machine :: init()

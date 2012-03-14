@@ -40,7 +40,7 @@ benCamera :: benCamera() :
 	distance = 0;
 	hoopDirection = 0;
 	axisCamera.WriteResolution(AxisCamera::kResolution_640x480);
-	axisCamera.WriteCompression(20);
+	axisCamera.WriteCompression(80);
 	axisCamera.WriteBrightness(50);
 }
 

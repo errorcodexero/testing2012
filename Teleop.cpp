@@ -27,10 +27,13 @@ void Machine :: AutonomousInit()
 {
 	compressor.Start();
 	autoTimer.Start();
-	switch(2)
-	{
-		case 2: shooter.start(1); break; 
-	}
+	shooter.start(1); 
+	if(autoSwitch.GetVoltage() < 1.0)
+		autoMode = 0;
+	else if(autoSwitch.GetVoltage() < 2.0)
+		autoMode = 1;
+	else
+		autoMode = 2;
 	/*
 	drive.enablePositionControl();
 	//drive.enableSpeedControl();
@@ -51,10 +54,27 @@ void Machine :: AutonomousInit()
 
 void Machine :: AutonomousPeriodic()
 {
-	
-	shooter.run(0.818);
-	if(autoTimer.Get() > 6.0)
+	/*
+	switch(autoMode)
+	{
+		case 0: shooter.run(0);
+		case 1: shooter.run(CENTER);
+		case 2: shooter.run(CORNER);
+	}
+	*/
+	shooter.run(CORNER);
+	if(autoTimer.Get() > 6.0 && autoTimer.Get() < 7)
+	{
 		shooter.stop();
+		//drive.tankDrive(-0.6, -0.6);
+	}
+	/*
+	if(autoTimer.Get() > 7)
+	{
+		shooter.stop();
+		drive.tankDrive(0.0, 0.0);
+	}
+	*/
 	if(autoTimer.Get() > 2.0 && (!isTime))
 	{
 		shooter.shoot();
@@ -67,6 +87,7 @@ void Machine :: AutonomousPeriodic()
 
 void Machine :: TeleopPeriodic()
 {	
+	SmartDashboard :: Log(autoSwitch.GetVoltage(), "AutoMode");
 	//camera.refreshImage();
 	if(rStick.GetTop())
 		topState = 1;
@@ -94,7 +115,7 @@ void Machine :: TeleopPeriodic()
 		cowcatcher.Set(1);
 	else
 		cowcatcher.Set(0);
-	
+	/*
 	if(lStick.GetRawButton(3) && (!turning))
 	{
 		turning = true;
@@ -144,6 +165,7 @@ void Machine :: TeleopPeriodic()
 			}
 		}
 	}
+	*/
 	
 	/*
 	if(convertOutput(pIO->GetAnalogInRatio(7)) && (!turning))
@@ -167,8 +189,6 @@ void Machine :: TeleopPeriodic()
 			specialTurning = false;
 		}
 	}
-	
-	printf("autonomous mode: %d: \n", getAutoSwitch());
 	
 	if(pIO->GetDigital(ILLUMINATOR_SWITCH))
 		illuminator.Set(Relay::kOn );
@@ -205,19 +225,20 @@ void Machine :: TeleopPeriodic()
 	if(pIO->GetDigital(PLUNGER_SWITCH) && shooter.shootEnable)
 		shooter.shoot();
 	
-	if((!turning) && (!specialTurning))
+	//float sensitivity = 1.0 / (10 * rStick.GetRawButton(3));
+
+	if(1)
 	{
-		printf("not running \n");
 		switch(/*stickToggle*/ 2)
 		{
 			case 0: 
-				drive.tankDrive(rStick.GetY(), lStick.GetY());
+				drive.tankDrive(rStick.GetY() , lStick.GetY());
 				break;
 			case 1:
-				drive.arcadeDrive(rStick.GetY(), rStick.GetX());
+				drive.arcadeDrive(rStick.GetY() , rStick.GetX() );
 				break;
 			case 2:
-				drive.arcadeDrive(rStick.GetY(), rStick.GetTwist());
+				drive.arcadeDrive(rStick.GetY() , rStick.GetTwist() );
 				break;
 			default:
 				SmartDashboard :: Log(stickToggle, "stickToggle has exceeded its bounds");

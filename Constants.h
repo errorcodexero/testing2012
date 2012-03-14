@@ -48,9 +48,9 @@
 #define SHOT_TIME 0.8
 #define ILLUMINATOR 3
 #define ILLUMINATOR_SWITCH 8
-#define AUTONOMOUS_SWITCH 3
+#define AUTONOMOUS_SWITCH 2
 #define pi 3.14159265
-#define CORNER 0.835
+#define CORNER 0.810
 #define CENTER 0.795
 
 #ifdef SIXWHEEL

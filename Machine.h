@@ -21,7 +21,7 @@ class Machine : public IterativeRobot
 	benPickup pickup;
 	benShooter shooter;
 	Timer autoTimer;
-	int getAutoSwitch();
+	AnalogChannel autoSwitch;
 	bool cowcatcherState;
 	int stickToggle;
 	int lTriggerState, rTriggerState;
@@ -33,6 +33,7 @@ class Machine : public IterativeRobot
 	unsigned int ticks;
 	bool fudge;
 	int extraSwitch;
+	int autoMode;
 
 public:
     Machine();
