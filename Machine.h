@@ -22,6 +22,8 @@ class Machine : public IterativeRobot
 	benShooter shooter;
 	Timer autoTimer;
 	AnalogChannel autoSwitch;
+	DigitalInput lightSensor;
+	Solenoid tipper;
 	bool cowcatcherState;
 	int stickToggle;
 	int lTriggerState, rTriggerState;
@@ -34,6 +36,9 @@ class Machine : public IterativeRobot
 	bool fudge;
 	int extraSwitch;
 	int autoMode;
+	int turnType;
+	float angle;
+	float camAngle;
 
 public:
     Machine();
@@ -59,6 +64,8 @@ public:
     void stop();
     
     void track();
+    
+    void setShooterLight(bool setting);
 private:
     int running;
     unsigned long int runTime;

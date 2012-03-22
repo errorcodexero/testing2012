@@ -3,7 +3,7 @@
 #include "Constants.h"
 
 benPickup::benPickup() :
-    relay(PICKUP_RELAY, Relay::kBothDirections), counter(BALL_COUNTER)
+    relay(PICKUP_RELAY, Relay::kBothDirections)
 {
 	direction = 0;
     stop();

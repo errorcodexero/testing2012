@@ -66,7 +66,12 @@ double benCamera :: getDistance()
 
 double benCamera :: getAngle()
 {
-	return angle;
+	if(!hoopDirection)
+		return angle;
+	else if(hoopDirection > 0)
+		return (pi / 54.0);
+	else
+		return -(pi / 54.0);
 }
 
 void benCamera :: writeImage(Image* img, const char *file, int usepalette)

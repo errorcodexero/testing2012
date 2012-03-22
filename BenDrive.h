@@ -8,7 +8,7 @@ class BenDrive
 	Victor Lvic, Rvic;
 #endif
 #ifdef JAGUAR
-	xCANJaguar tlJaguar, trJaguar, blJaguar, brJaguar;
+	xCANJaguar lJaguar, rJaguar;
 #endif
 	
 public:
@@ -21,6 +21,6 @@ public:
 	void enableSpeedControl();
 	void enablePositionControl();
 private:
-	xCANJaguar* jaguars[4];
+	xCANJaguar* jaguars[2];
 };
 

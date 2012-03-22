@@ -115,57 +115,104 @@ void Machine :: TeleopPeriodic()
 		cowcatcher.Set(1);
 	else
 		cowcatcher.Set(0);
-	/*
-	if(lStick.GetRawButton(3) && (!turning))
+	
+	if(rStick.GetRawButton(3))
 	{
-		turning = true;
-		ticks = 0;
-		fudge = 1;
-		drive.tankDrive(0.3, -0.3);
+		if(!lTriggerState)
+		{
+			fudge = 1;
+			turnType = -2;
+			printf("Adjusting \n");
+			turning = true;
+			drive.enablePositionControl();
+		}
 	}
-	else if(lStick.GetRawButton(4) && (!turning))
+	else
 	{
-		turning = true;
-		ticks = 0;
-		fudge = 1;
-		drive.tankDrive(-0.3, 0.3);
-	}
-	else if(lStick.GetRawButton(5) && (!turning))
-	{
-		turning = true;
-		ticks = 0;
 		fudge = 0;
-		drive.tankDrive(0.3, -0.3);
 	}
-	else if(lStick.GetRawButton(6) && (!turning))
+	if(rStick.GetRawButton(5))
 	{
-		turning = true;
-		ticks = 0;
+		if(!lTriggerState)
+		{
+			fudge = 1;
+			turnType = -1;
+			printf("Adjusting \n");
+			turning = true;
+			drive.enablePositionControl();
+		}
+	}
+	else
+	{
 		fudge = 0;
-		drive.tankDrive(-0.3, 0.3);
+	}
+	if(rStick.GetRawButton(4))
+	{
+		if(!lTriggerState)
+		{
+			fudge = 1;
+			turnType = 1;
+			printf("Adjusting \n");
+			turning = true;
+			drive.enablePositionControl();
+		}
+	}
+	else
+	{
+		fudge = 0;
+	}
+	if(rStick.GetRawButton(6))
+	{
+		if(!lTriggerState)
+		{
+			fudge = 1;
+			turnType = 2;
+			printf("Adjusting \n");
+			turning = true;
+			drive.enablePositionControl();
+		}
+	}
+	else
+	{
+		fudge = 0;
 	}
 	
-	if(turning)
+	if(rStick.GetRawButton(2))
 	{
-		printf("running");
-		if(fudge)
+		if(!lTriggerState)
 		{
-			if(ticks > 160)
-			{
-				drive.tankDrive(0.0, 0.0);
-				turning = false;
-			}
-		}
-		else
-		{
-			if(ticks > 80)
-			{
-				drive.tankDrive(0.0, 0.0);
-				turning = false;
-			}
+			camera.refreshImage();
+			camAngle = camera.getAngle();
+			fudge = 1;
+			turnType = 9;
+			printf("Adjusting \n");
+			turning = true;
+			drive.enablePositionControl();
 		}
 	}
-	*/
+	else
+	{
+		fudge = 0;
+	}
+
+	if(turning)
+	{
+		switch(turnType)
+		{
+			case -2: angle = -(pi / 18.0); break;
+			case -1: angle = -(pi / 54.0); break;
+			case 0: angle = 0.0; break;
+			case 1: angle = (pi / 18.0); break;
+			case 2: angle = (pi / 54.0); break;
+			case 9: angle = camAngle; break;
+			default: printf("Things are seriously wrong \n"); break;
+		}
+		if(drive.angleDrive(angle, pi / 180))
+		{
+			drive.enableVoltageControl();
+			turning = false;
+		}
+	}
 	
 	/*
 	if(convertOutput(pIO->GetAnalogInRatio(7)) && (!turning))
@@ -178,10 +225,24 @@ void Machine :: TeleopPeriodic()
 		extraSwitch = 0;
 	}
 	*/
+	/*
+	if(lStick.GetTrigger())
+	{
+		if(!lTriggerState)
+		{
+			lTriggerState = 1;
+			printf("angle drive enabled \n");
+			specialTurning = true;
+			drive.enablePositionControl();
+		}
+	}
+	else
+	{
+		lTriggerState = 0;
+	}
 	
 	if(specialTurning)
 	{
-		printf("running /n");
 		//if(drive.angleDrive( (float)camera.getAngle(), (pi / 360.0)))
 		if(drive.angleDrive((pi / 4), (pi / 360)))
 		{
@@ -189,11 +250,17 @@ void Machine :: TeleopPeriodic()
 			specialTurning = false;
 		}
 	}
+	*/
 	
 	if(pIO->GetDigital(ILLUMINATOR_SWITCH))
 		illuminator.Set(Relay::kOn );
 	else
 		illuminator.Set(Relay::kOff);
+	
+	if(lightSensor.Get())
+		pIO->SetDigitalOutput(RAMP_LIGHT, 1);
+	else
+		pIO->SetDigitalOutput(RAMP_LIGHT, 0);
 	/*
 	switch (convertOutput(pIO->GetAnalogInRatio(COWCATCHER_SWITCH)))
 	{
@@ -221,13 +288,19 @@ void Machine :: TeleopPeriodic()
 			default: printf("Things are seriously wrong. \n");
 		}
 	}
+	switch(convertOutput(pIO->GetAnalogInRatio(TIPPER_SWITCH)))
+	{
+		case -1: tipper.Set(1); break;
+		case 0: break;
+		case 1: tipper.Set(0); break;
+	}
 	shooter.run( pIO->GetAnalogInRatio(ADJUST_SWITCH) + 0.2);
 	if(pIO->GetDigital(PLUNGER_SWITCH) && shooter.shootEnable)
 		shooter.shoot();
 	
 	//float sensitivity = 1.0 / (10 * rStick.GetRawButton(3));
 
-	if(1)
+	if(!turning)
 	{
 		switch(/*stickToggle*/ 2)
 		{

@@ -7,7 +7,9 @@ pDS(DriverStation::GetInstance()),
 cowcatcher(COWCATCHER), 
 illuminator(ILLUMINATOR, Relay::kForwardOnly),
 compressor(COMPRESSOR_SWITCH, COMPRESSOR_RELAY),
-autoSwitch(AUTONOMOUS_SWITCH)
+autoSwitch(AUTONOMOUS_SWITCH),
+lightSensor(LIGHT_SENSOR),
+tipper(TIPPER)
 
 {
 	//m_watchdog.SetEnabled(false);
@@ -23,6 +25,9 @@ autoSwitch(AUTONOMOUS_SWITCH)
 	specialTurning = 0;
 	extraSwitch = 0;
 	lastCase = 0;
+	turnType = 0;
+	angle = 0.0;
+	camAngle = 0.0;
 	pIO = &pDS->GetEnhancedIO();
 }
 
@@ -34,6 +39,11 @@ Machine :: ~Machine()
 void Machine :: RobotInit()
 {
 	
+}
+
+void Machine :: setShooterLight(bool setting)
+{
+	pIO->SetDigitalOutput(SHOOTER_LIGHT, setting);
 }
 
 void Machine :: init()

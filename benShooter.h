@@ -29,6 +29,7 @@ private:
 	xGearTooth topSensor, bottomSensor;
 	xPIDController topPID, bottomPID;
 	Timer shotTimer;
+	bool onTarget;
 /*
 public:
 	benShooter();

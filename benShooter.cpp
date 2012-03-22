@@ -12,6 +12,7 @@ bottomPID(p, i, d, &bottomSensor, &bottomMotor)
 
 {
 	autoHax = 0;
+	onTarget = 0;
 	shootEnable = true;
 	running = 0;
 	speed = 0.010825 * (109.5 * 109.5) + 5.02778 * 109.5 + 265;
@@ -46,6 +47,8 @@ void benShooter :: start(int direction)
 void benShooter :: stop()
 {
 	running = 0;
+	onTarget = false;
+	DriverStation::GetInstance()->GetEnhancedIO().SetDigitalOutput(SHOOTER_LIGHT, 0);
 	topPID.Reset();
 	bottomPID.Reset();
 	topMotor.PIDWrite(0.0);
@@ -55,8 +58,9 @@ void benShooter :: stop()
 
 void benShooter :: shoot()
 {
-	if(/*topPID.OnTarget() && bottomPID.OnTarget()*/ 1)
+	if(running && onTarget)
 	{
+		//setShooterLight(1);
 		shotTimer.Start();
 		shotTimer.Reset();
 		shootEnable = false;
@@ -67,14 +71,18 @@ void benShooter :: shoot()
 
 void benShooter :: run(float multiplier)
 {
+	
 	if(running)
 	{
 		topPID.SetSetpoint(speed * driveRatio * multiplier);
 		bottomPID.SetSetpoint(speed * multiplier);
 		SmartDashboard :: Log(multiplier, "Speed");
+		onTarget = topPID.OnTarget() && bottomPID.OnTarget();
+		DriverStation::GetInstance()->GetEnhancedIO().SetDigitalOutput(SHOOTER_LIGHT, onTarget);
 	}
 	if(shotTimer.Get() > SHOT_TIME) 
 	{
+		//setShooterLight(0);
 		plunger.Set(0);
 		shootEnable = true;
 		autoHax ++;

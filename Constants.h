@@ -7,10 +7,12 @@
 //Port Numbers
 #define RSTICK 1
 #define LSTICK 2
-#define TLJAGUAR 7
-#define TRJAGUAR 6
+#define TLJAGUAR 7 
+#define TRJAGUAR 6 
 #define BLJAGUAR 5
 #define BRJAGUAR 8
+#define LJAGUAR 5
+#define RJAGUAR 6
 #define RVIC 2
 #define LVIC 1
 #define RSIDEDIRECTION -1.0
@@ -22,19 +24,18 @@
 #define PARTICLE_THRESHOLD 10
 #define DISTANCE_BETWEEN_WHEELS 19.0 // in inches
 #define DIAMETER_OF_WHEEL 8.0 // in inches
-#define GEAR_RATIO (36.0 / 16.0)
+#define GEAR_RATIO (36.0 / 17.0)
 #define COWCATCHER 1
 #define PLUNGER 2
 #define PICKUP_RELAY 2
-#define BALL_COUNTER 2
 #define PICKUP_SWITCH 1
 #define COWCATCHER_SWITCH 2
 #define SHOOTER_SWITCH 4
 #define PLUNGER_SWITCH 1
 #define SHOOTER_TOP_VICTOR 2
 #define SHOOTER_BOTTOM_VICTOR 1
-#define SHOOTER_TOP_SENSOR 3
-#define SHOOTER_BOTTOM_SENSOR 4
+#define SHOOTER_TOP_SENSOR 3 // 3
+#define SHOOTER_BOTTOM_SENSOR 4 // 4
 #define COMPRESSOR_SWITCH 1
 #define COMPRESSOR_RELAY 1
 #define ADJUST_SWITCH 3
@@ -52,6 +53,13 @@
 #define pi 3.14159265
 #define CORNER 0.810
 #define CENTER 0.795
+#define TIPPER 3
+#define TIPPER_SWITCH 6
+#define LIGHT_SENSOR 2
+#define RAMP_LIGHT 9
+#define SHOOTER_LIGHT 10
+#define ENCODER_COUNT 250
+//9, 10, enhancedio.setdigitaloutput(value), digital input 2 for light sensor
 
 #ifdef SIXWHEEL
 #define JAGUAR
