@@ -34,8 +34,8 @@
 #define PLUNGER_SWITCH 1
 #define SHOOTER_TOP_VICTOR 2
 #define SHOOTER_BOTTOM_VICTOR 1
-#define SHOOTER_TOP_SENSOR 3 // 3
-#define SHOOTER_BOTTOM_SENSOR 4 // 4
+#define SHOOTER_TOP_SENSOR 4 // 3
+#define SHOOTER_BOTTOM_SENSOR 3 // 4
 #define COMPRESSOR_SWITCH 1
 #define COMPRESSOR_RELAY 1
 #define ADJUST_SWITCH 3
@@ -60,6 +60,7 @@
 #define SHOOTER_LIGHT 10
 #define ENCODER_COUNT 250
 //9, 10, enhancedio.setdigitaloutput(value), digital input 2 for light sensor
+// .3 + 0.650
 
 #ifdef SIXWHEEL
 #define JAGUAR

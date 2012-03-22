@@ -294,7 +294,7 @@ void Machine :: TeleopPeriodic()
 		case 0: break;
 		case 1: tipper.Set(0); break;
 	}
-	shooter.run( pIO->GetAnalogInRatio(ADJUST_SWITCH) + 0.2);
+	shooter.run( 0.3 + 6.50 * pIO->GetAnalogInRatio(ADJUST_SWITCH));
 	if(pIO->GetDigital(PLUNGER_SWITCH) && shooter.shootEnable)
 		shooter.shoot();
 	

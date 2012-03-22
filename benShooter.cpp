@@ -74,9 +74,12 @@ void benShooter :: run(float multiplier)
 	
 	if(running)
 	{
-		topPID.SetSetpoint(speed * driveRatio * multiplier);
-		bottomPID.SetSetpoint(speed * multiplier);
-		SmartDashboard :: Log(multiplier, "Speed");
+		float bottom = speed * multiplier;
+		float top = bottom * driveRatio;
+		topPID.SetSetpoint(top);
+		bottomPID.SetSetpoint(bottom);
+		SmartDashboard :: Log(bottom, "b set");
+		SmartDashboard :: Log(top, "t set");
 		onTarget = topPID.OnTarget() && bottomPID.OnTarget();
 		DriverStation::GetInstance()->GetEnhancedIO().SetDigitalOutput(SHOOTER_LIGHT, onTarget);
 	}
