@@ -47,6 +47,7 @@
 #define SHOOTER_PID_CONTROLLER 2
 #define MAX_GEARTOOTH_PPS 1200 // maximum number of pulses the geartooth will give in a second
 #define SHOT_TIME 0.8
+#define TURN_TIME 0.3
 #define ILLUMINATOR 3
 #define ILLUMINATOR_SWITCH 8
 #define AUTONOMOUS_SWITCH 2

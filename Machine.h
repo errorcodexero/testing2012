@@ -39,6 +39,8 @@ class Machine : public IterativeRobot
 	int turnType;
 	float angle;
 	float camAngle;
+	bool lastDriveMode;
+	Timer turnTimer;
 
 public:
     Machine();

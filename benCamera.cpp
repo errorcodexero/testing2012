@@ -39,9 +39,9 @@ benCamera :: benCamera() :
 	angle = 0;
 	distance = 0;
 	hoopDirection = 0;
-	axisCamera.WriteResolution(AxisCamera::kResolution_640x480);
-	axisCamera.WriteCompression(80);
-	axisCamera.WriteBrightness(50);
+	//axisCamera.WriteResolution(AxisCamera::kResolution_640x480);
+	//axisCamera.WriteCompression(50);
+	//axisCamera.WriteBrightness(50);
 }
 
 void errorCheck(int val)

@@ -30,6 +30,7 @@ private:
 	xPIDController topPID, bottomPID;
 	Timer shotTimer;
 	bool onTarget;
+	int logCount;
 /*
 public:
 	benShooter();

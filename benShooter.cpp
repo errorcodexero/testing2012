@@ -15,6 +15,7 @@ bottomPID(p, i, d, &bottomSensor, &bottomMotor)
 	onTarget = 0;
 	shootEnable = true;
 	running = 0;
+	logCount = 0;
 	speed = 0.010825 * (109.5 * 109.5) + 5.02778 * 109.5 + 265;
     topPID.SetInputRange(0.0, MAX_GEARTOOTH_PPS);
     bottomPID.SetInputRange(0.0, MAX_GEARTOOTH_PPS);
@@ -78,10 +79,15 @@ void benShooter :: run(float multiplier)
 		float top = bottom * driveRatio;
 		topPID.SetSetpoint(top);
 		bottomPID.SetSetpoint(bottom);
+		onTarget = topPID.OnTarget() && bottomPID.OnTarget();
+		logCount++;
+		if(logCount > 20)
+		{
 		SmartDashboard :: Log(bottom, "b set");
 		SmartDashboard :: Log(top, "t set");
-		onTarget = topPID.OnTarget() && bottomPID.OnTarget();
 		DriverStation::GetInstance()->GetEnhancedIO().SetDigitalOutput(SHOOTER_LIGHT, onTarget);
+		logCount = 0;
+		}
 	}
 	if(shotTimer.Get() > SHOT_TIME) 
 	{

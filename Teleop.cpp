@@ -87,7 +87,7 @@ void Machine :: AutonomousPeriodic()
 
 void Machine :: TeleopPeriodic()
 {	
-	SmartDashboard :: Log(autoSwitch.GetVoltage(), "AutoMode");
+	//SmartDashboard :: Log(autoSwitch.GetVoltage(), "AutoMode");
 	//camera.refreshImage();
 	if(rStick.GetTop())
 		topState = 1;
@@ -120,6 +120,8 @@ void Machine :: TeleopPeriodic()
 	{
 		if(!lTriggerState)
 		{
+			turnTimer.Start();
+			turnTimer.Reset();
 			fudge = 1;
 			turnType = -2;
 			printf("Adjusting \n");
@@ -135,6 +137,8 @@ void Machine :: TeleopPeriodic()
 	{
 		if(!lTriggerState)
 		{
+			turnTimer.Start();
+			turnTimer.Reset();
 			fudge = 1;
 			turnType = -1;
 			printf("Adjusting \n");
@@ -150,6 +154,8 @@ void Machine :: TeleopPeriodic()
 	{
 		if(!lTriggerState)
 		{
+			turnTimer.Start();
+			turnTimer.Reset();
 			fudge = 1;
 			turnType = 1;
 			printf("Adjusting \n");
@@ -165,6 +171,8 @@ void Machine :: TeleopPeriodic()
 	{
 		if(!lTriggerState)
 		{
+			turnTimer.Start();
+			turnTimer.Reset();
 			fudge = 1;
 			turnType = 2;
 			printf("Adjusting \n");
@@ -176,7 +184,7 @@ void Machine :: TeleopPeriodic()
 	{
 		fudge = 0;
 	}
-	
+	/*
 	if(rStick.GetRawButton(2))
 	{
 		if(!lTriggerState)
@@ -194,6 +202,7 @@ void Machine :: TeleopPeriodic()
 	{
 		fudge = 0;
 	}
+*/
 
 	if(turning)
 	{
@@ -204,14 +213,29 @@ void Machine :: TeleopPeriodic()
 			case 0: angle = 0.0; break;
 			case 1: angle = (pi / 18.0); break;
 			case 2: angle = (pi / 54.0); break;
-			case 9: angle = camAngle; break;
+			//case 9: angle = camAngle; break;
 			default: printf("Things are seriously wrong \n"); break;
 		}
-		if(drive.angleDrive(angle, pi / 180))
+		if(drive.angleDrive(angle, pi / 90) || turnTimer.Get() > TURN_TIME)
 		{
 			drive.enableVoltageControl();
 			turning = false;
 		}
+	}
+	
+	
+	if(rStick.GetRawButton(2))
+	{
+		if(lastDriveMode)
+		{
+			drive.enableSpeedControl();
+			lastDriveMode = true;
+		}
+	}
+	else if(lastDriveMode)
+	{
+		drive.enableVoltageControl();
+		lastDriveMode = false;
 	}
 	
 	/*
@@ -290,11 +314,11 @@ void Machine :: TeleopPeriodic()
 	}
 	switch(convertOutput(pIO->GetAnalogInRatio(TIPPER_SWITCH)))
 	{
-		case -1: tipper.Set(1); break;
+		case -1: tipper.Set(0); break;
 		case 0: break;
-		case 1: tipper.Set(0); break;
+		case 1: tipper.Set(1); break;
 	}
-	shooter.run( 0.3 + 6.50 * pIO->GetAnalogInRatio(ADJUST_SWITCH));
+	shooter.run( 0.3 + 0.750 * pIO->GetAnalogInRatio(ADJUST_SWITCH));
 	if(pIO->GetDigital(PLUNGER_SWITCH) && shooter.shootEnable)
 		shooter.shoot();
 	
@@ -329,6 +353,7 @@ void Machine :: DisabledPeriodic()
 
 void Machine :: TeleopContinuous()
 {
+	taskDelay(1);
 	//long start = GetFPGATime();
 	//long end = GetFPGATime();
 	//printf("%ld \n", (end - start) / 1000);
@@ -336,11 +361,12 @@ void Machine :: TeleopContinuous()
 
 void Machine :: AutonomousContinuous()
 {
+	taskDelay(1);
 	//track();
 }
 
 void Machine :: DisabledContinuous()
 {
-	
+	taskDelay(1);
 }
 

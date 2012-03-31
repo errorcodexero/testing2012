@@ -28,6 +28,7 @@ tipper(TIPPER)
 	turnType = 0;
 	angle = 0.0;
 	camAngle = 0.0;
+	lastDriveMode = false;
 	pIO = &pDS->GetEnhancedIO();
 }
 
