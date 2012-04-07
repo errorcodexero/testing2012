@@ -33,13 +33,18 @@ class Machine : public IterativeRobot
 	int lastCase;
 	bool isTime;
 	unsigned int ticks;
-	bool fudge;
+	int fudge;
 	int extraSwitch;
 	int autoMode;
 	int turnType;
 	float angle;
 	float camAngle;
 	bool lastDriveMode;
+	bool two;
+	bool three;
+	bool four;
+	bool five;
+	bool six;
 	Timer turnTimer;
 
 public:

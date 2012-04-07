@@ -126,7 +126,7 @@ int benCamera :: setParticles()
     	//imaqRejectBorder(img, img, 0);
     	CHECK(imaqConvexHull(img, img, 1));
     	CHECK(imaqSizeFilter(img, img, 1, 2, IMAQ_KEEP_LARGE, NULL));
-    	writeImage(img, "Processed_Image.bmp", 1);
+    	//writeImage(img, "Processed_Image.bmp", 1);
     	
     	particle allParticles[256];
     	CHECK(imaqCountParticles(img, 1, &numParticles));

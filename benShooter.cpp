@@ -85,6 +85,8 @@ void benShooter :: run(float multiplier)
 		{
 		SmartDashboard :: Log(bottom, "b set");
 		SmartDashboard :: Log(top, "t set");
+		SmartDashboard::Log(bottomPID.GetInput(), "b spd");
+		SmartDashboard::Log(topPID.GetInput(), "t spd");
 		DriverStation::GetInstance()->GetEnhancedIO().SetDigitalOutput(SHOOTER_LIGHT, onTarget);
 		logCount = 0;
 		}

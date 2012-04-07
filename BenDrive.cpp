@@ -15,6 +15,7 @@ void BenDrive::enableSpeedControl()
 		jaguars[i]->Set( 0.0, 0 );
 		jaguars[i]->EnableControl();
 	}
+	printf("Speed control enabled \n");
 }
 
 void BenDrive::enablePositionControl()
@@ -26,10 +27,11 @@ void BenDrive::enablePositionControl()
 		jaguars[i]->ConfigNeutralMode( xCANJaguar::kNeutralMode_Brake );
 		jaguars[i]->SetPositionReference( xCANJaguar::kPosRef_QuadEncoder );
 		jaguars[i]->ConfigEncoderCodesPerRev( ENCODER_COUNT );  // or 250, or 300?
-		jaguars[i]->SetPID( 600.0, 0.005, 0.001 );
+		jaguars[i]->SetPID( 2400.0, 0.005, 0.001 );
 		jaguars[i]->Set( 0.0, 0 );
 		jaguars[i]->EnableControl(0.0);
 	}
+	printf("Position control enabled \n");
 }
 
 void BenDrive :: enableVoltageControl()
@@ -43,6 +45,7 @@ void BenDrive :: enableVoltageControl()
 		jaguars[i]->SetExpiration( 0.5 );
 		jaguars[i]->Set( 0.0F, 0 );
 	}
+	printf("Voltage control enabled \n");
 }
 
 BenDrive :: BenDrive() :

@@ -116,14 +116,29 @@ void Machine :: TeleopPeriodic()
 	else
 		cowcatcher.Set(0);
 	
-	if(rStick.GetRawButton(3))
+	two = rStick.GetRawButton(2);
+	three = rStick.GetRawButton(3);
+	four = rStick.GetRawButton(4);
+	five = rStick.GetRawButton(5);
+	six = rStick.GetRawButton(6);
+	
+	if(two || three || four || five || six)
 	{
-		if(!lTriggerState)
+		if(!fudge)
 		{
 			turnTimer.Start();
 			turnTimer.Reset();
+			if(two)
+				turnType = 9;
+			else if(three)
+				turnType = -2;
+			else if(four)
+				turnType = 1;
+			else if(five)
+				turnType = -1;
+			else
+				turnType = 2;
 			fudge = 1;
-			turnType = -2;
 			printf("Adjusting \n");
 			turning = true;
 			drive.enablePositionControl();
@@ -133,76 +148,7 @@ void Machine :: TeleopPeriodic()
 	{
 		fudge = 0;
 	}
-	if(rStick.GetRawButton(5))
-	{
-		if(!lTriggerState)
-		{
-			turnTimer.Start();
-			turnTimer.Reset();
-			fudge = 1;
-			turnType = -1;
-			printf("Adjusting \n");
-			turning = true;
-			drive.enablePositionControl();
-		}
-	}
-	else
-	{
-		fudge = 0;
-	}
-	if(rStick.GetRawButton(4))
-	{
-		if(!lTriggerState)
-		{
-			turnTimer.Start();
-			turnTimer.Reset();
-			fudge = 1;
-			turnType = 1;
-			printf("Adjusting \n");
-			turning = true;
-			drive.enablePositionControl();
-		}
-	}
-	else
-	{
-		fudge = 0;
-	}
-	if(rStick.GetRawButton(6))
-	{
-		if(!lTriggerState)
-		{
-			turnTimer.Start();
-			turnTimer.Reset();
-			fudge = 1;
-			turnType = 2;
-			printf("Adjusting \n");
-			turning = true;
-			drive.enablePositionControl();
-		}
-	}
-	else
-	{
-		fudge = 0;
-	}
-	/*
-	if(rStick.GetRawButton(2))
-	{
-		if(!lTriggerState)
-		{
-			camera.refreshImage();
-			camAngle = camera.getAngle();
-			fudge = 1;
-			turnType = 9;
-			printf("Adjusting \n");
-			turning = true;
-			drive.enablePositionControl();
-		}
-	}
-	else
-	{
-		fudge = 0;
-	}
-*/
+	
 
 	if(turning)
 	{
@@ -213,17 +159,17 @@ void Machine :: TeleopPeriodic()
 			case 0: angle = 0.0; break;
 			case 1: angle = (pi / 18.0); break;
 			case 2: angle = (pi / 54.0); break;
-			//case 9: angle = camAngle; break;
+			case 9: angle = camAngle; break;
 			default: printf("Things are seriously wrong \n"); break;
 		}
-		if(drive.angleDrive(angle, pi / 90) || turnTimer.Get() > TURN_TIME)
+		if(drive.angleDrive(angle, pi / 360) || turnTimer.Get() > TURN_TIME)
 		{
 			drive.enableVoltageControl();
 			turning = false;
 		}
 	}
 	
-	
+	/*
 	if(rStick.GetRawButton(2))
 	{
 		if(lastDriveMode)
@@ -237,6 +183,7 @@ void Machine :: TeleopPeriodic()
 		drive.enableVoltageControl();
 		lastDriveMode = false;
 	}
+	*/
 	
 	/*
 	if(convertOutput(pIO->GetAnalogInRatio(7)) && (!turning))

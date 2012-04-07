@@ -16,6 +16,7 @@ tipper(TIPPER)
 	stickToggle = 2;
 	autoMode = 1;
 	isTime = 0;
+	fudge = 0;
 	cowcatcherState = 0;
 	lTriggerState = 0;
 	rTriggerState = 0;
@@ -29,6 +30,11 @@ tipper(TIPPER)
 	angle = 0.0;
 	camAngle = 0.0;
 	lastDriveMode = false;
+	two = 0;
+	three = 0;
+	four = 0;
+	five = 0;
+	six = 0;
 	pIO = &pDS->GetEnhancedIO();
 }
 
