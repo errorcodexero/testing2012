@@ -126,10 +126,12 @@ void Machine :: TeleopPeriodic()
 	{
 		if(!fudge)
 		{
-			turnTimer.Start();
-			turnTimer.Reset();
 			if(two)
+			{
+				camera.refreshImage();
+				camAngle = camera.getAngle();
 				turnType = 9;
+			}
 			else if(three)
 				turnType = -2;
 			else if(four)
@@ -138,6 +140,8 @@ void Machine :: TeleopPeriodic()
 				turnType = -1;
 			else
 				turnType = 2;
+			turnTimer.Start();
+			turnTimer.Reset();
 			fudge = 1;
 			printf("Adjusting \n");
 			turning = true;
@@ -162,6 +166,7 @@ void Machine :: TeleopPeriodic()
 			case 9: angle = camAngle; break;
 			default: printf("Things are seriously wrong \n"); break;
 		}
+		printf("Turn_Type: %d, angle: %g, camAngle: %g \n", turnType, angle, camAngle);
 		if(drive.angleDrive(angle, pi / 360) || turnTimer.Get() > TURN_TIME)
 		{
 			drive.enableVoltageControl();

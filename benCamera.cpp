@@ -240,7 +240,7 @@ void benCamera :: setPosition()
 	double angleLeft = (pCenter - hoopParticles[1].leftBound) * (FOV / xResolution);
 	double angleRight = (hoopParticles[2].rightBound - pCenter) * (FOV / xResolution);
 	angle = ((xResolution / 2) - pCenter) * (FOV / xResolution);
-	printf("values: %g, %g, %g \n", angleLeft, angleRight, angle);
+	printf("Angles: %g, %g, %g \n", angleLeft, angleRight, angle);
 	double leftmostAngle = (pi / 2) - (angleLeft - angle);
 	double rightmostAngle = (pi / 2) - (angleRight - angle);
 	double calcDistanceLeft = sin(leftmostAngle) * (hoopWidthHalf / sin(angleLeft));
